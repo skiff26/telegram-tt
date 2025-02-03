@@ -31,6 +31,7 @@
   --left-column-min-width: 16rem;
   --left-column-max-width: 26.5rem;
 
+  display: flex;
   width: 33vw;
   min-width: var(--left-column-min-width);
   max-width: var(--left-column-max-width);

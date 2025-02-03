@@ -37,6 +37,7 @@ import { useFullscreenStatus } from '../../../hooks/window/useFullscreen';
 import useLeftHeaderButtonRtlForumTransition from './hooks/useLeftHeaderButtonRtlForumTransition';
 
 import Icon from '../../common/icons/Icon';
+import MenuIcon from '../../common/icons/MenuIcon';
 import PeerChip from '../../common/PeerChip';
 import StoryToggler from '../../story/StoryToggler';
 import Button from '../../ui/Button';
@@ -52,6 +53,7 @@ import './LeftMainHeader.scss';
 type OwnProps = {
   shouldHideSearch?: boolean;
   content: LeftColumnContent;
+  hasSidebar?: boolean;
   contactsFilter: string;
   isClosingSearch?: boolean;
   shouldSkipTransition?: boolean;
@@ -84,6 +86,7 @@ const CLEAR_CHAT_SEARCH_PARAM = { id: undefined };
 const LeftMainHeader: FC<OwnProps & StateProps> = ({
   shouldHideSearch,
   content,
+  hasSidebar,
   contactsFilter,
   isClosingSearch,
   searchQuery,
@@ -168,11 +171,9 @@ const LeftMainHeader: FC<OwnProps & StateProps> = ({
         onClick={hasMenu ? onTrigger : () => onReset()}
         ariaLabel={hasMenu ? oldLang('AccDescrOpenMenu2') : 'Return to chat list'}
       >
-        <div className={buildClassName(
-          'animated-menu-icon',
-          !hasMenu && 'state-back',
-          shouldSkipTransition && 'no-animation',
-        )}
+        <MenuIcon
+          hasMenu={hasMenu}
+          shouldSkipTransition={shouldSkipTransition}
         />
       </Button>
     );
@@ -253,34 +254,37 @@ const LeftMainHeader: FC<OwnProps & StateProps> = ({
     <div className="LeftMainHeader">
       <div id="LeftMainHeader" className="left-header" ref={headerRef}>
         {oldLang.isRtl && <div className="DropdownMenuFiller" />}
-        <DropdownMenu
-          trigger={MainButton}
-          footer={`${APP_NAME} ${versionString}`}
-          className={buildClassName(
-            'main-menu',
-            oldLang.isRtl && 'rtl',
-            shouldHideSearch && oldLang.isRtl && 'right-aligned',
-            shouldDisableDropdownMenuTransitionRef.current && oldLang.isRtl && 'disable-transition',
-          )}
-          forceOpen={isBotMenuOpen}
-          positionX={shouldHideSearch && oldLang.isRtl ? 'right' : 'left'}
-          transformOriginX={IS_ELECTRON && IS_MAC_OS && !isFullscreen ? 90 : undefined}
-          onTransitionEnd={oldLang.isRtl ? handleDropdownMenuTransitionEnd : undefined}
-        >
-          <LeftSideMenuItems
-            onSelectArchived={onSelectArchived}
-            onSelectContacts={onSelectContacts}
-            onSelectSettings={onSelectSettings}
-            onBotMenuOpened={markBotMenuOpen}
-            onBotMenuClosed={unmarkBotMenuOpen}
-          />
-        </DropdownMenu>
+        {!hasSidebar && (
+          <DropdownMenu
+            trigger={MainButton}
+            footer={`${APP_NAME} ${versionString}`}
+            className={buildClassName(
+              'main-menu',
+              oldLang.isRtl && 'rtl',
+              shouldHideSearch && oldLang.isRtl && 'right-aligned',
+              shouldDisableDropdownMenuTransitionRef.current && oldLang.isRtl && 'disable-transition',
+            )}
+            forceOpen={isBotMenuOpen}
+            positionX={shouldHideSearch && oldLang.isRtl ? 'right' : 'left'}
+            transformOriginX={IS_ELECTRON && IS_MAC_OS && !isFullscreen ? 90 : undefined}
+            onTransitionEnd={oldLang.isRtl ? handleDropdownMenuTransitionEnd : undefined}
+          >
+            <LeftSideMenuItems
+              onSelectArchived={onSelectArchived}
+              onSelectContacts={onSelectContacts}
+              onSelectSettings={onSelectSettings}
+              onBotMenuOpened={markBotMenuOpen}
+              onBotMenuClosed={unmarkBotMenuOpen}
+            />
+          </DropdownMenu>
+        )}
         <SearchInput
           inputId="telegram-search-input"
           resultsItemSelector=".LeftSearch .ListItem-button"
           className={buildClassName(
             (globalSearchChatId || searchDate) ? 'with-picker-item' : undefined,
             shouldHideSearch && 'SearchInput--hidden',
+            hasSidebar && 'SearchInput--w-full',
           )}
           value={isClosingSearch ? undefined : (contactsFilter || searchQuery)}
           focused={isSearchFocused}

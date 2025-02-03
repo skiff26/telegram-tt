@@ -37,6 +37,7 @@ type OwnProps = {
   onSettingsScreenSelect: (screen: SettingsScreens) => void;
   foldersDispatch: FolderEditDispatch;
   onLeftColumnContentChange: (content: LeftColumnContent) => void;
+  hasSidebar?: boolean;
   shouldHideFolderTabs?: boolean;
   isForumPanelOpen?: boolean;
 };
@@ -62,6 +63,7 @@ const SAVED_MESSAGES_HOTKEY = '0';
 const FIRST_FOLDER_INDEX = 0;
 
 const ChatFolders: FC<OwnProps & StateProps> = ({
+  hasSidebar,
   foldersDispatch,
   onSettingsScreenSelect,
   onLeftColumnContentChange,
@@ -322,7 +324,7 @@ const ChatFolders: FC<OwnProps & StateProps> = ({
     );
   }
 
-  const shouldRenderFolders = folderTabs && folderTabs.length > 1;
+  const shouldRenderFolders = folderTabs && folderTabs.length > 1 && !hasSidebar;
 
   return (
     <div
